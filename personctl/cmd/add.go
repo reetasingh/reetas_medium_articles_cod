@@ -5,7 +5,9 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"flag"
 	"fmt"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -18,7 +20,31 @@ type Person struct {
 
 var firstName string
 var lastName string
-var phone []string
+var phone Nargs
+
+type Nargs []string
+
+// String representation of Nargs
+func (nargs *Nargs) String() string {
+	return strings.Join(*nargs, " ")
+}
+
+// Set appends a new argument  to instance of Nargs
+func (nargs *Nargs) Set(arg string) error {
+	// split by space
+	allElems := strings.Split(arg, ",")
+	h := *nargs
+	for _, elem := range allElems {
+		h = append(h, elem)
+	}
+	*nargs = h
+	return nil
+}
+
+// Type is a no-op
+func (nargs *Nargs) Type() string {
+	return "Nargs"
+}
 
 // addCmd represents the add command
 var addCmd = &cobra.Command{
@@ -36,13 +62,13 @@ to quickly create a Cobra application.`,
 			panic(err)
 		}
 		lastName, err := cmd.Flags().GetString("last-name")
+
 		if err != nil {
 			panic(err)
 		}
-		phone, err := cmd.Flags().GetStringSlice("phone-number")
-		if err != nil {
-			panic(err)
-		}
+		flag.Parse()
+		phone := strings.Split(phone.String(), " ")
+		fmt.Println(phone)
 
 		p := new(Person)
 		p.firstName = firstName
@@ -56,5 +82,5 @@ func init() {
 	rootCmd.AddCommand(addCmd)
 	addCmd.Flags().StringVar(&firstName, "first-name", "", "First name of the person")
 	addCmd.Flags().StringVar(&lastName, "last-name", "", "Last name of the person")
-	addCmd.Flags().StringSliceVar(&phone, "phone-number", []string{}, "phone number of the person")
+	addCmd.Flags().Var(&phone, "phone-number", "phone number of the person")
 }
