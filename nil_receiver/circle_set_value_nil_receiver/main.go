@@ -17,8 +17,7 @@ func (c *Circle) area() float64 {
 	return math.Pi * c.r * c.r
 }
 
-func main() 
-{
+func main() {
 	var c *Circle
 	fmt.Println(c.area())
 	fmt.Println(c.r)
