@@ -1,23 +1,30 @@
 package main
 
-import "testing"
+import (
+	"github.com/stretchr/testify/assert"
+	"testing"
+)
 
 type mockTestDB struct {
-
 }
 
-func (m * mockTestDB)Save(person *Person) error {
-	// just a mock, don't do enything
+func (m *mockTestDB) Save(person *Person) error {
+	// just a mock, don't do anything
 	return nil
+}
+
+func (m *mockTestDB) Save(person *Person) error {
+	// just a mock, don't do anything
+	return fmt.Errorf("error in save")
 }
 
 func TestPersonServiceImpl_CreatePerson(t *testing.T) {
 	p := Person{
-		ID: 1,
-		err: nil
+		ID:  1,
+		err: nil,
 	}
 	personServiceImpl := new(PersonServiceImpl)
-	personServiceImpl.db := new(mockTestDB)
+	personServiceImpl.db = mockTestDB{}
 	err := personServiceImpl.CreatePerson(p)
-	assert.NoError(err)
+	assert.NoError(t, err)
 }
